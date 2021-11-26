@@ -14,7 +14,7 @@ public class NetworkedServer : MonoBehaviour
     int hostID;
     int socketPort = 5491;
 
-   // LinkedList<PlayerAccount> playerAccounts;
+    LinkedList<PlayerAccount> playerAccounts;
 
     const int playerAccountNameAndPassword = 1;
 
@@ -22,7 +22,7 @@ public class NetworkedServer : MonoBehaviour
 
     int playerWaitingForMatchWithID = -1;
 
-  //  LinkedList<GameRoom> gameRooms;
+    LinkedList<GameRoom> gameRooms;
 
     // Start is called before the first frame update
     void Start()
@@ -34,13 +34,13 @@ public class NetworkedServer : MonoBehaviour
         HostTopology topology = new HostTopology(config, maxConnections);
         hostID = NetworkTransport.AddHost(topology, socketPort, null);
 
-      //  playerAccountDataPath = Application.dataPath + Path.DirectorySeparatorChar + "PlayerAccounts.txt";
+        playerAccountDataPath = Application.dataPath + Path.DirectorySeparatorChar + "PlayerAccounts.txt";
 
-      //  playerAccounts = new LinkedList<PlayerAccount>();
+        playerAccounts = new LinkedList<PlayerAccount>();
 
-       // LoadPlayerAccount();
+        LoadPlayerAccount();
 
-       // gameRooms = new LinkedList<GameRoom>();
+        gameRooms = new LinkedList<GameRoom>();
 
 
         //Test for loading players
@@ -50,9 +50,7 @@ public class NetworkedServer : MonoBehaviour
             Debug.Log(pa.name + "," + pa.password);
         }
         */
-        {
-
-        }
+     
     }
 
     // Update is called once per frame
@@ -96,7 +94,7 @@ public class NetworkedServer : MonoBehaviour
     {
         Debug.Log("msg recieved = " + msg + ".  connection id = " + id);
 
-        /*
+        
 
         string[] csv = msg.Split(',');
 
@@ -249,12 +247,11 @@ public class NetworkedServer : MonoBehaviour
                     playerAccounts.AddLast(pa);
                 }
             }
-
             sr.Close();
         }
     }
 
-    /*
+    
     private GameRoom GetGameRoomWithClientID(int id)
     {
         foreach (GameRoom gr in gameRooms)
@@ -267,14 +264,11 @@ public class NetworkedServer : MonoBehaviour
         return null;
     }
 
-        */
-
-    }
 }
 
 
 
-/*
+
 public class PlayerAccount
 {
     public string name;
@@ -301,7 +295,9 @@ public class GameRoom
 }
 
 
-/*
+
+
+
 public static class ClientToServerSignifiers
 {
     public const int CreateAccount = 1;
@@ -327,4 +323,4 @@ public static class ServerToClientSignifiers
 
     public const int GameStart = 6;
 }
-*/
+
