@@ -226,9 +226,9 @@ public class NetworkedServer : MonoBehaviour
         //Turn Taken
         else if (signifier == ClientToServerSignifiers.TurnTaken)
         {
-            Debug.Log("Player who took turn" + id);
+           // Debug.Log("Player who took turn" + id);
 
-            Debug.Log(msg);
+            //Debug.Log(msg);
 
             string node = csv[1];
 
@@ -245,6 +245,25 @@ public class NetworkedServer : MonoBehaviour
                 {
                     SendMessageToClient(ServerToClientSignifiers.PlayersTurn + "", gr.playerID1);
                     SendMessageToClient(ServerToClientSignifiers.OpponentNode + "," + node, gr.playerID1);
+                }
+            }
+        }
+
+        else if (signifier == ClientToServerSignifiers.PlayerWin)
+        {
+            GameRoom gr = GetGameRoomWithClientID(id);
+
+            if (gr != null)
+            {
+                if (gr.playerID1 == id)
+                {
+                    SendMessageToClient(ServerToClientSignifiers.WinConditionForPlayer + "", gr.playerID1);
+                    SendMessageToClient(ServerToClientSignifiers.LoseConditionForPlayer + "", gr.playerID2);
+                }
+                else if (gr.playerID2 == id)
+                {
+                    SendMessageToClient(ServerToClientSignifiers.WinConditionForPlayer + "", gr.playerID2);
+                    SendMessageToClient(ServerToClientSignifiers.LoseConditionForPlayer + "", gr.playerID1);
                 }
             }
         }
@@ -344,7 +363,10 @@ public static class ClientToServerSignifiers
     public const int PlayGame = 4;
 
     public const int TurnTaken = 5;
+
+    public const int PlayerWin = 6;
 }
+
 
 public static class ServerToClientSignifiers
 {
@@ -369,6 +391,10 @@ public static class ServerToClientSignifiers
 
     public const int OpponentNode = 9;
 
-    public const int OpponentPlayed = 10;
+    public const int WinConditionForPlayer = 10;
+
+    public const int LoseConditionForPlayer = 11;
+
+    public const int OpponentPlayed = 12;
 }
 
