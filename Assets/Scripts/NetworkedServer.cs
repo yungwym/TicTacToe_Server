@@ -94,12 +94,12 @@ public class NetworkedServer : MonoBehaviour
     {
         Debug.Log("msg recieved = " + msg + ".  connection id = " + id);
 
-        
-
         string[] csv = msg.Split(',');
 
         int signifier = int.Parse(csv[0]);
 
+
+        //Create Account
         if (signifier == ClientToServerSignifiers.CreateAccount)
         {
             Debug.Log("Create Account");
@@ -133,6 +133,8 @@ public class NetworkedServer : MonoBehaviour
             //If not, create new account, add to list and save to list
             //Send Client success or failure
         }
+
+        //Login to Account
         else if (signifier == ClientToServerSignifiers.Login)
         {
             Debug.Log("Login to Account");
@@ -178,6 +180,8 @@ public class NetworkedServer : MonoBehaviour
             //Send client success/failure
 
         }
+
+        //Join Queue for GameRoom
         else if (signifier == ClientToServerSignifiers.JoinQueueForGameRoom)
         {
             if (playerWaitingForMatchWithID == -1)
@@ -196,6 +200,8 @@ public class NetworkedServer : MonoBehaviour
                 playerWaitingForMatchWithID = -1;
             }
         }
+
+        //Play Game
         else if (signifier == ClientToServerSignifiers.PlayGame)
         {
             GameRoom gr = GetGameRoomWithClientID(id);
@@ -204,11 +210,41 @@ public class NetworkedServer : MonoBehaviour
             {
                 if (gr.playerID1 == id)
                 {
-                    SendMessageToClient(ServerToClientSignifiers.OpponentPlayed + "", gr.playerID2);
+                    // SendMessageToClient(ServerToClientSignifiers.OpponentPlayed + "", gr.playerID2);
+                    SendMessageToClient(ServerToClientSignifiers.FirstPlayerSet + "", gr.playerID1);
+                    SendMessageToClient(ServerToClientSignifiers.PlayersTurn + "", gr.playerID1);
+
                 }
                 else
                 {
-                    SendMessageToClient(ServerToClientSignifiers.OpponentPlayed + "", gr.playerID1);
+                    //SendMessageToClient(ServerToClientSignifiers.OpponentPlayed + "", gr.playerID1);
+                    SendMessageToClient(ServerToClientSignifiers.SecondPlayerSet + "", gr.playerID2);
+                }
+            }
+        }
+
+        //Turn Taken
+        else if (signifier == ClientToServerSignifiers.TurnTaken)
+        {
+            Debug.Log("Player who took turn" + id);
+
+            Debug.Log(msg);
+
+            string node = csv[1];
+
+            GameRoom gr = GetGameRoomWithClientID(id);
+
+            if (gr != null)
+            {
+                if (gr.playerID1 == id)
+                {
+                    SendMessageToClient(ServerToClientSignifiers.PlayersTurn + "", gr.playerID2);
+                    SendMessageToClient(ServerToClientSignifiers.OpponentNode + "," + node, gr.playerID2);
+                }
+                else if (gr.playerID2 == id)
+                {
+                    SendMessageToClient(ServerToClientSignifiers.PlayersTurn + "", gr.playerID1);
+                    SendMessageToClient(ServerToClientSignifiers.OpponentNode + "," + node, gr.playerID1);
                 }
             }
         }
@@ -263,7 +299,6 @@ public class NetworkedServer : MonoBehaviour
         }
         return null;
     }
-
 }
 
 
@@ -307,6 +342,8 @@ public static class ClientToServerSignifiers
     public const int JoinQueueForGameRoom = 3;
 
     public const int PlayGame = 4;
+
+    public const int TurnTaken = 5;
 }
 
 public static class ServerToClientSignifiers
@@ -319,8 +356,19 @@ public static class ServerToClientSignifiers
 
     public const int AccountCreationFailed = 4;
 
-    public const int OpponentPlayed = 5;
+    public const int GameStart = 5;
 
-    public const int GameStart = 6;
+
+    //Addition
+
+    public const int FirstPlayerSet = 6;
+
+    public const int SecondPlayerSet = 7;
+
+    public const int PlayersTurn = 8;
+
+    public const int OpponentNode = 9;
+
+    public const int OpponentPlayed = 10;
 }
 
